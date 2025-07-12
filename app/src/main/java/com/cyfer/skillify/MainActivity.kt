@@ -1,47 +1,41 @@
 package com.cyfer.skillify
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.navigation.compose.rememberNavController
+import com.cyfer.skillify.auth.AuthApiService
+import com.cyfer.skillify.auth.AuthRepository
+import com.cyfer.skillify.auth.AuthViewModel
+import com.cyfer.skillify.nav.AppNavGraph
 import com.cyfer.skillify.ui.theme.SkillifyTheme
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : ComponentActivity() {
+    @SuppressLint("ViewModelConstructorInComposable")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             SkillifyTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                Surface(color = MaterialTheme.colorScheme.background) {
+
+                    // ✅ Replace this with your actual IP and port of Django server
+                    val retrofit = Retrofit.Builder()
+                        .baseUrl("http://192.168.1.100:8000/")  // Replace with your local IP
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build()
+
+                    val authService = retrofit.create(AuthApiService::class.java)
+                    val authViewModel = AuthViewModel(AuthRepository(authService))
+
+                    val navController = rememberNavController()
+                    AppNavGraph(navController = navController, authViewModel = authViewModel)
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    SkillifyTheme {
-        Greeting("Android")
     }
 }
