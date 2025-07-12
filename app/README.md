@@ -50,7 +50,7 @@ Skillify/
 1. **Clone the repo**:
    ```bash
    git clone https://github.com/yourusername/skillify-android.git
-   cd skillify-android
+   cd skillify-apk
    ```
 
 2. **Open in Android Studio**:
